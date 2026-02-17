@@ -1,0 +1,56 @@
+.Card {
+    flex: 1 1 300px;   /* responsive sizing */
+    max-width: 380px;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 0.5rem;
+}
+
+.Card_box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.Card_box_left {
+    display: flex;
+    align-items: center;
+}
+
+.Card_box_left_img {
+    border-radius: 50%;
+}
+
+.Card_box_right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-left: 1rem;
+}
+
+.Card_box_right_middle {
+    display: flex;
+    flex-direction: column;
+}
+
+.Card_box_right_middle h4 {
+    margin: 0;
+}
+
+.Card_box_right_middle small {
+    color: gray;
+}
+
+.Card_box_right_end small {
+    background-color: #F18303;
+    padding: 0.4rem 0.7rem;
+    border-radius: 50%;
+    color: white;
+}
+.Chat_box_box {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
