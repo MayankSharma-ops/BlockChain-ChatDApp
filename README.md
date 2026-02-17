@@ -7,11 +7,12 @@ Try running some of the following tasks:
 
 ```shell
 npx hardhat help
-npx hardhat test
+npx hardhat compile
 REPORT_GAS=true npx hardhat test
 npx hardhat node
+npx hardhat run scripts/deploy.js --network localhost
 npx hardhat run scripts/deploy.js
 ```
 =======
 # BlockChain-ChatDApp
->>>>>>> 34a2b39f84ccb9c1292d996c97bf5d4d0634a886
+>>>>>>> 0x5FbDB2315678afecb367f032d93F642f64180aa3
