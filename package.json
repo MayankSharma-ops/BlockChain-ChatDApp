@@ -6,20 +6,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "clear": "rd /s /q node_modules & del package-lock.json & rd /s /q .next",
+    "deploy": "hardhat run scripts/deploy.js --network holesky",
+    "deploy-local": "hardhat run scripts/deploy.js --network localhost",
+    "node": "hardhat node"
   },
   "dependencies": {
+    "dotenv": "^17.3.1",
+    "ethers": "^5.8.0",
     "next": "15.5.12",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "web3modal": "^1.9.12"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
-    "@tailwindcss/postcss": "^4",
-    "ethers": "^5.8.0",
-    "hardhat": "^2.22.0",
-    "tailwindcss": "^4"
+    "hardhat": "^2.22.0"
   }
 }

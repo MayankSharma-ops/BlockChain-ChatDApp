@@ -35,12 +35,15 @@ contract ChatApp {
     }
 
     // CREATE ACCOUNT
+    event UserCreated(address indexed user, string name);
     function createAccount(string calldata name) external {
         require(!checkUserExists(msg.sender), "User already exists");
         require(bytes(name).length > 0, "Username cannot be empty");
 
         userList[msg.sender].name = name;
         getAllUsers.push(AllUserStruct(name, msg.sender));
+
+        emit UserCreated(msg.sender, name);
     }
 
     // GET USERNAME

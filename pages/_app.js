@@ -2,7 +2,7 @@ import "../styles/globals.css";
 
 //INTERNAL IMPORT
 import { ChatAppProvider } from "../Context/ChatAppContext";
-import { NavBar } from "../components/index";
+import { NavBar } from "../Components/index";
 
 const MyApp = ({ Component, pageProps }) => (
   <div>
