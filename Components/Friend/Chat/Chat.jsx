@@ -56,37 +56,22 @@ const Chat = ({
         <div className={Style.Chat_box}>
           <div className={Style.Chat_box_left}>
             {friendMsg.map((el, i) => {
-              return (
-                <div key={i}>
-                  {el.sender.toLowerCase() === account.toLowerCase() ? (
-                    <div className={Style.Chat_box_left_title}>
-                      <Image
-                        src={images.accountName}
-                        alt="image"
-                        width={50}
-                        height={50}
-                      />
-                      <span>
-                        {userName}
-                        <small> Time: {convertTime(el.timestamp)}</small>
-                      </span>
-                    </div>
-                  ) : (
-                    <div className={Style.Chat_box_left_title}>
-                      <Image
-                        src={images.accountName}
-                        alt="image"
-                        width={50}
-                        height={50}
-                      />
-                      <span>
-                        {currentUserName}
-                        <small> Time: {convertTime(el.timestamp)}</small>
-                      </span>
-                    </div>
-                  )}
+              const isMe = el.sender.toLowerCase() === account.toLowerCase();
 
-                  <p>{el.msg}</p>
+              return (
+                <div
+                  key={i}
+                  className={isMe ? Style.myWrapper : Style.friendWrapper}
+                >
+                  {/* Message Bubble */}
+                  <p className={isMe ? Style.myMessage : Style.friendMessage}>
+                    {el.msg}
+                  </p>
+
+                  {/* Time bubble */}
+                  <small className={isMe ? Style.myTime : Style.friendTime}>
+                    {convertTime(el.timestamp)}
+                  </small>
                 </div>
               );
             })}

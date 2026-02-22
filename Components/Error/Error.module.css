@@ -1,24 +1,69 @@
-.Error{
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
+.Error {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
-    width: 400px;
-    padding: 2rem;
-    border-radius: 20px;
+  z-index: 9999;
 
-    background: #F18303;
-    color: #fff;
-    text-align: center;
+  width: 400px;
+  padding: 2rem;
+  border-radius: 20px;
+
+  background: #f18303;
+  color: #fff;
+  text-align: center;
+
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
+.closeBtn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
 
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.6rem;
+  cursor: pointer;
+  font-weight: bold;
+}
 
+/* MESSAGE TEXT */
+.Error_message {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  word-wrap: break-word;
+}
 
-@media only screen and (max-width: 35em) {
-    .Error{
-        inset: 10% 10% 55% 10%;
-    }
+/* Animation */
+
+@keyframes modalPop {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .Error {
+    width: 94vw;
+    padding: 1.25rem;
+    border-radius: 14px;
+  }
+
+  .Error_message {
+    font-size: 1rem;
+  }
+
+  .closeBtn {
+    font-size: 2rem;
+    top: 8px;
+    right: 10px;
+  }
 }

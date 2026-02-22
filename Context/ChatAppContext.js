@@ -21,6 +21,9 @@ export const ChatAppProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [userLists, setUserLists] = useState([]);
   const [error, setError] = useState("");
+  const clearError = () => {
+    setError("");
+  };
 
   //CHAT USER DATA
   const [currentUserName, setCurrentUserName] = useState("");
@@ -157,6 +160,7 @@ export const ChatAppProvider = ({ children }) => {
         userLists,
         loading,
         error,
+        clearError,
         currentUserName,
         currentUserAddress,
       }}
