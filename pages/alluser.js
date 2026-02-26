@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useContext} from 'react'
+import React, { useEffect, useState, useContext } from "react";
 
 //INTERNAL IMPORT
-import { UserCard } from '../Components/index'
-import Style from '../styles/alluser.module.css'
-import { ChatAppContext } from '../Context/ChatAppContext'
+import { UserCard } from "../Components/index";
+import Style from "../styles/alluser.module.css";
+import { ChatAppContext } from "../Context/ChatAppContext";
 
 const AllUser = () => {
   const { userLists, addFriends, account, friendLists } =
@@ -35,4 +35,4 @@ const AllUser = () => {
   );
 };
 
-export default AllUser
+export default AllUser;
