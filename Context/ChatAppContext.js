@@ -18,6 +18,7 @@ export const ChatAppProvider = ({ children }) => {
   const [userName, setUserName] = useState("");
   const [friendLists, setFriendLists] = useState([]);
   const [friendMsg, setFriendMsg] = useState([]);
+  const [friendRequests, setFriendRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [userLists, setUserLists] = useState([]);
   const [error, setError] = useState("");
@@ -45,6 +46,9 @@ export const ChatAppProvider = ({ children }) => {
       //GET MY FRIEND LIST
       const FriendLists = await contract.getMyFriendList();
       setFriendLists(FriendLists);
+      // GET MY FRIEND REQUESTS
+      const FriendRequests = await contract.getMyFriendRequests();
+      setFriendRequests(FriendRequests);
       //GET ALL USER LIST
       const UserList = await contract.getAllAppUser();
       setUserLists(UserList);
@@ -109,7 +113,25 @@ export const ChatAppProvider = ({ children }) => {
       await fetchData();
     } catch (error) {
       console.log(error);
-      setError("Error While Adding Your Friend Please Try Again");
+      setError("Error While Sending Friend Request Please Try Again");
+    }
+  };
+
+  const respondToFriendRequest = async ({ requester, accept }) => {
+    try {
+      if (!requester) return;
+
+      const contract = await connectingWithContract();
+      const tx = await contract.respondToFriendRequest(requester, accept);
+
+      setLoading(true);
+      await tx.wait();
+      setLoading(false);
+
+      await fetchData();
+    } catch (error) {
+      console.log(error);
+      setError("Error While Responding To Friend Request");
     }
   };
 
@@ -149,6 +171,7 @@ export const ChatAppProvider = ({ children }) => {
         readMessage,
         createAccount,
         addFriends,
+        respondToFriendRequest,
         sendMessage,
         readUser,
         connectWallet,
@@ -157,6 +180,7 @@ export const ChatAppProvider = ({ children }) => {
         userName,
         friendLists,
         friendMsg,
+        friendRequests,
         userLists,
         loading,
         error,

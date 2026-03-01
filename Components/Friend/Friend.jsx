@@ -23,9 +23,40 @@ const Friend = () => {
     currentUserAddress,
     readUser,
     friendMsg,
+    friendRequests,
+    respondToFriendRequest,
   } = useContext(ChatAppContext);
   return (
     <div className={Style.Friend}>
+            <div className={Style.Friend_requests}>
+        <h3>Contact Requests</h3>
+        {friendRequests.length === 0 ? (
+          <p className={Style.Friend_requests_empty}>No pending requests</p>
+        ) : (
+          friendRequests.map((request, i) => (
+            <div key={`${request.requester}-${i}`} className={Style.Friend_requests_item}>
+              <div>
+                <strong>{request.name}</strong>
+                <p>{request.requester}</p>
+              </div>
+              <div className={Style.Friend_requests_actions}>
+                <button
+                  type="button"
+                  onClick={() => respondToFriendRequest({ requester: request.requester, accept: true })}
+                >
+                  Accept
+                </button>
+                <button
+                  type="button"
+                  onClick={() => respondToFriendRequest({ requester: request.requester, accept: false })}
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
       <div className={Style.Friend_box}>
         <div className={Style.Friend_box_left}>
           {friendLists.map((el, i) => (

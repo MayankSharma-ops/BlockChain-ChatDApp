@@ -12,6 +12,55 @@
   padding: 1rem;
   border-radius: .5rem;
 }
+.Friend_requests {
+  background-color: rgba(0, 0, 0, 0.25);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.Friend_requests_item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.Friend_requests_item p {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.Friend_requests_actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.Friend_requests_actions button {
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+.Friend_requests_actions button:first-child {
+  background: #2ecc71;
+  color: #fff;
+}
+
+.Friend_requests_actions button:last-child {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.Friend_requests_empty {
+  margin-top: 0.5rem;
+  opacity: 0.75;
+}
 
 @media (max-width: 600px) {
 
