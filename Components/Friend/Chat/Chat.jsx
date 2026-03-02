@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
@@ -13,7 +13,7 @@ const Chat = ({
   friendMsg,
   account,
   userName,
-  loading,
+  messageLoading,
   currentUserName,
   currentUserAddress,
   readUser,
@@ -32,12 +32,42 @@ const Chat = ({
     setChatData(router.query);
   }, [router.isReady]);
 
+  const readMessageRef = useRef(readMessage);
+  const readUserRef = useRef(readUser);
+
+  useEffect(() => {
+    readMessageRef.current = readMessage;
+    readUserRef.current = readUser;
+  }, [readMessage, readUser]);
+
   useEffect(() => {
     if (chatData.address) {
-      readMessage(chatData.address);
-      readUser(chatData.address);
+      readMessageRef.current(chatData.address);
+      readUserRef.current(chatData.address);
     }
   }, [chatData.address]);
+  useEffect(() => {
+    if (!chatData.address) return;
+
+    const interval = setInterval(() => {
+      readMessageRef.current(chatData.address);
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, [chatData.address]);
+
+  const handleSendMessage = async () => {
+    const trimmedMessage = message.trim();
+
+    if (!trimmedMessage || !currentUserAddress) return;
+
+    await functionName({
+      msg: trimmedMessage,
+      Address: currentUserAddress,
+    });
+
+    setMessage("");
+  };
 
   return (
     <div className={Style.Chat}>
@@ -85,6 +115,7 @@ const Chat = ({
               <input
                 type="text"
                 placeholder="Type your message"
+                value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
 
@@ -105,7 +136,8 @@ const Chat = ({
                 onClick={() => document.getElementById("fileUpload").click()}
               />
 
-              {loading ? (
+              {/* {loading ? ( */}
+              {messageLoading ? (
                 <Loader />
               ) : (
                 <Image
@@ -113,12 +145,7 @@ const Chat = ({
                   width={50}
                   height={50}
                   style={{ cursor: "pointer" }}
-                  onClick={() =>
-                    functionName({
-                      msg: message,
-                      Address: currentUserAddress,
-                    })
-                  }
+                  onClick={handleSendMessage}
                 />
               )}
             </div>

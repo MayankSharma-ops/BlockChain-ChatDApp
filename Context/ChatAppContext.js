@@ -20,6 +20,7 @@ export const ChatAppProvider = ({ children }) => {
   const [friendMsg, setFriendMsg] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [messageLoading, setMessageLoading] = useState(false);
   const [userLists, setUserLists] = useState([]);
   const [error, setError] = useState("");
   const clearError = () => {
@@ -64,17 +65,18 @@ export const ChatAppProvider = ({ children }) => {
   //READ MESSAGE
   const readMessage = async (friendAddress) => {
     try {
-      setLoading(true);
+      // setLoading(true);
+      if (!friendAddress) return;
 
       const contract = await connectingWithContract();
       const messages = await contract.readMessage(friendAddress);
 
       setFriendMsg(messages);
       setError("");
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.log(error);
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -89,8 +91,8 @@ export const ChatAppProvider = ({ children }) => {
       setLoading(true);
       await getCreatedUser.wait();
       setLoading(false);
-      // fetchData();
-      window.location.reload();
+      // window.location.reload();
+      await fetchData();
     } catch (error) {
       setError("Error While Creating Your Account Please reload your Browser");
     }
@@ -138,14 +140,18 @@ export const ChatAppProvider = ({ children }) => {
   //SEND MESSAGE TO YOUR FRIEND
   const sendMessage = async ({ msg, Address }) => {
     try {
-      //   if (msg || Address) return setError("Please Provide Message");
+      if (!msg || !Address) return setError("Please Provide Message");
       const contract = await connectingWithContract();
       const addMessage = await contract.sendMessage(Address, msg);
-      setLoading(true);
+      // setLoading(true);
+      setMessageLoading(true);
       await addMessage.wait();
-      setLoading(false);
-      window.location.reload();
+      // setLoading(false);
+      // window.location.reload();
+      await readMessage(Address);
+      setMessageLoading(false);
     } catch (error) {
+      setMessageLoading(false);
       setError("Error While Sending Message Please Try Again");
     }
   };
@@ -183,6 +189,7 @@ export const ChatAppProvider = ({ children }) => {
         friendRequests,
         userLists,
         loading,
+        messageLoading,
         error,
         clearError,
         currentUserName,
