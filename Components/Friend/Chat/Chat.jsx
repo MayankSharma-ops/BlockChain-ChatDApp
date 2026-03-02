@@ -21,11 +21,14 @@ const Chat = ({
   //USE STATE
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [chatData, setChatData] = useState({
     name: "",
     address: "",
   });
   const router = useRouter();
+  const emojiPickerRef = useRef(null);
+  const emojiList = ["😀", "😂", "😍", "😎", "🔥", "👍", "🙏", "🎉", "❤️", "😢"];
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -56,6 +59,21 @@ const Chat = ({
     return () => clearInterval(interval);
   }, [chatData.address]);
 
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        showEmojiPicker &&
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target)
+      ) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [showEmojiPicker]);
+
   const handleSendMessage = async () => {
     const trimmedMessage = message.trim();
 
@@ -67,6 +85,11 @@ const Chat = ({
     });
 
     setMessage("");
+    setShowEmojiPicker(false);
+  };
+
+  const handleEmojiSelect = (emoji) => {
+    setMessage((prevMessage) => `${prevMessage}${emoji}`);
   };
 
   return (
@@ -110,7 +133,32 @@ const Chat = ({
         {currentUserName && currentUserAddress ? (
           <div className={Style.Chat_box_send}>
             <div className={Style.Chat_box_send_img}>
-              <Image src={images.smile} alt="smile" width={50} height={50} />
+              {/* <Image src={images.smile} alt="smile" width={50} height={50} /> */}
+              <div className={Style.emojiPickerWrapper} ref={emojiPickerRef}>
+                <Image
+                  src={images.smile}
+                  alt="smile"
+                  width={50}
+                  height={50}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setShowEmojiPicker((prevState) => !prevState)}
+                />
+
+                {showEmojiPicker ? (
+                  <div className={Style.emojiPicker}>
+                    {emojiList.map((emoji) => (
+                      <button
+                        type="button"
+                        key={emoji}
+                        className={Style.emojiButton}
+                        onClick={() => handleEmojiSelect(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
 
               <input
                 type="text"
