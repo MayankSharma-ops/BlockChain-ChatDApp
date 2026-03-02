@@ -1,8 +1,8 @@
 .Model {
-  max-width: 1100px;
-  width: 100%;
+  max-width: 1400px;
+  width: min(94vw, 1400px);
   margin: 1rem auto;
-  padding-inline: 1rem;
+  padding-inline: clamp(1rem, 2vw, 2rem);
 }
 
 .Model_box {
@@ -81,6 +81,7 @@
 @media (max-width: 600px) {
   .Model {
     margin: 0;
+    width: 100%;
     padding: 1rem;
   }
 

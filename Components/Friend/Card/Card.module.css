@@ -1,9 +1,11 @@
 .Card {
     flex: 1 1 300px;   /* responsive sizing */
+    width: 100%;
     max-width: 380px;
     padding: 1rem;
     background-color: rgba(0, 0, 0, 0.25);
     border-radius: 0.5rem;
+    overflow: hidden;
 }
 
 .Card_box {
@@ -26,12 +28,14 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    min-width: 0;
     margin-left: 1rem;
 }
 
 .Card_box_right_middle {
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 .Card_box_right_middle h4 {
@@ -78,5 +82,11 @@
     font-size: 0.7rem;
     padding: 0.3rem 0.55rem;
   }
+}
+.Card_box_right_middle small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
