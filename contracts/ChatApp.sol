@@ -74,8 +74,33 @@ contract ChatApp {
         pendingRequests[friendKey][msg.sender] = true;
     }
 
-        function getMyFriendRequests() external view returns(FriendRequest[] memory) {
+    function getMyFriendRequests() external view returns(FriendRequest[] memory) {
         return friendRequests[msg.sender];
+    }
+
+    function getMyPendingFriendRequests() external view returns (address[] memory) {
+        uint256 totalUsers = getAllUsers.length;
+        uint256 count = 0;
+
+        for (uint256 i = 0; i < totalUsers; i++) {
+            address userAddress = getAllUsers[i].accountAddress;
+            if (pendingRequests[msg.sender][userAddress]) {
+                count++;
+            }
+        }
+
+        address[] memory pending = new address[](count);
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < totalUsers; i++) {
+            address userAddress = getAllUsers[i].accountAddress;
+            if (pendingRequests[msg.sender][userAddress]) {
+                pending[currentIndex] = userAddress;
+                currentIndex++;
+            }
+        }
+
+        return pending;
     }
 
     function respondToFriendRequest(address requester, bool accept) external {

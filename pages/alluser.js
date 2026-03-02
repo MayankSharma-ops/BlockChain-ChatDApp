@@ -6,8 +6,19 @@ import Style from "../styles/alluser.module.css";
 import { ChatAppContext } from "../Context/ChatAppContext";
 
 const AllUser = () => {
-  const { userLists, addFriends, account, friendLists } =
-    useContext(ChatAppContext);
+  // const { userLists, addFriends, account, friendLists } =
+  const {
+    userLists,
+    addFriends,
+    account,
+    friendLists,
+    pendingSentRequests,
+    refreshData,
+  } = useContext(ChatAppContext);
+
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
 
   return (
     <div>
@@ -28,7 +39,17 @@ const AllUser = () => {
             return !alreadyFriend;
           })
           .map((el, i) => (
-            <UserCard key={i} user={el} i={i} addFriends={addFriends} />
+            // <UserCard key={i} user={el} i={i} addFriends={addFriends} />
+            <UserCard
+              key={i}
+              user={el}
+              i={i}
+              addFriends={addFriends}
+              isPending={pendingSentRequests?.some(
+                (address) =>
+                  address.toLowerCase() === el.accountAddress.toLowerCase(),
+              )}
+            />
           ))}
       </div>
     </div>

@@ -24,6 +24,11 @@
     cursor: pointer;
 }
 
+.UserCard_box_info button:disabled{
+    cursor: not-allowed;
+    opacity: .7;
+}
+
 
 .number{
     position: absolute;

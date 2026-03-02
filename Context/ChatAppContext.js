@@ -19,6 +19,7 @@ export const ChatAppProvider = ({ children }) => {
   const [friendLists, setFriendLists] = useState([]);
   const [friendMsg, setFriendMsg] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
+  const [pendingSentRequests, setPendingSentRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [messageLoading, setMessageLoading] = useState(false);
   const [userLists, setUserLists] = useState([]);
@@ -50,6 +51,8 @@ export const ChatAppProvider = ({ children }) => {
       // GET MY FRIEND REQUESTS
       const FriendRequests = await contract.getMyFriendRequests();
       setFriendRequests(FriendRequests);
+      const pendingRequests = await contract.getMyPendingFriendRequests();
+      setPendingSentRequests(pendingRequests);
       //GET ALL USER LIST
       const UserList = await contract.getAllAppUser();
       setUserLists(UserList);
@@ -61,6 +64,16 @@ export const ChatAppProvider = ({ children }) => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (!account) return;
+
+    const interval = setInterval(() => {
+      fetchData();
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [account]);
 
   //READ MESSAGE
   const readMessage = async (friendAddress) => {
@@ -194,6 +207,8 @@ export const ChatAppProvider = ({ children }) => {
         clearError,
         currentUserName,
         currentUserAddress,
+        pendingSentRequests,
+        refreshData: fetchData,
       }}
     >
       {children}
