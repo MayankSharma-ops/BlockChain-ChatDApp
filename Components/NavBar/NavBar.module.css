@@ -54,6 +54,15 @@
   display: none;
 }
 
+.notification_badge {
+  margin-left: 0.4rem;
+  font-size: 0.7rem;
+  background: #f18303;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+}
+
 .modelBox {
   position: fixed;
   inset: 0 0 0 0;

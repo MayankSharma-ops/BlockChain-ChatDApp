@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 
 //INTERNAL IMPORT
@@ -24,8 +24,24 @@ export const ChatAppProvider = ({ children }) => {
   const [messageLoading, setMessageLoading] = useState(false);
   const [userLists, setUserLists] = useState([]);
   const [error, setError] = useState("");
+  const [notifications, setNotifications] = useState([]);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  const previousPendingRef = useRef(new Set());
+  const hasPendingSnapshotRef = useRef(false);
   const clearError = () => {
     setError("");
+  };
+  const markNotificationsAsRead = () => {
+    setNotifications((prev) =>
+      prev.map((notification) => ({ ...notification, read: true })),
+    );
+    setUnreadNotifications(0);
+  };
+
+  const clearNotifications = () => {
+    setNotifications([]);
+    setUnreadNotifications(0);
   };
 
   //CHAT USER DATA
@@ -74,6 +90,52 @@ export const ChatAppProvider = ({ children }) => {
 
     return () => clearInterval(interval);
   }, [account]);
+
+  useEffect(() => {
+    if (!account) return;
+
+    const currentPending = new Set(
+      pendingSentRequests?.map((address) => address.toLowerCase()) || [],
+    );
+
+    if (!hasPendingSnapshotRef.current) {
+      previousPendingRef.current = currentPending;
+      hasPendingSnapshotRef.current = true;
+      return;
+    }
+
+    const newNotifications = [];
+
+    previousPendingRef.current.forEach((requestAddress) => {
+      if (currentPending.has(requestAddress)) return;
+
+      const isAccepted = friendLists?.some(
+        (friend) => friend.pubkey.toLowerCase() === requestAddress,
+      );
+      const requester = userLists?.find(
+        (user) => user.accountAddress.toLowerCase() === requestAddress,
+      );
+      const requesterName =
+        requester?.name ||
+        `${requestAddress.slice(0, 6)}...${requestAddress.slice(-4)}`;
+
+      newNotifications.push({
+        id: `${requestAddress}-${Date.now()}-${Math.random()}`,
+        read: false,
+        createdAt: Date.now(),
+        message: isAccepted
+          ? `${requesterName} accepted your friend request.`
+          : `${requesterName} rejected your friend request.`,
+      });
+    });
+
+    if (newNotifications.length) {
+      setNotifications((prev) => [...newNotifications, ...prev]);
+      setUnreadNotifications((prev) => prev + newNotifications.length);
+    }
+
+    previousPendingRef.current = currentPending;
+  }, [account, pendingSentRequests, friendLists, userLists]);
 
   //READ MESSAGE
   const readMessage = async (friendAddress) => {
@@ -209,6 +271,10 @@ export const ChatAppProvider = ({ children }) => {
         currentUserAddress,
         pendingSentRequests,
         refreshData: fetchData,
+        notifications,
+        unreadNotifications,
+        markNotificationsAsRead,
+        clearNotifications,
       }}
     >
       {children}

@@ -1,0 +1,50 @@
+.notification {
+  width: 80%;
+  margin: 2rem auto 4rem;
+}
+
+.notification_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.notification_header button {
+  border: 1px solid #f18303;
+  background: transparent;
+  color: #f18303;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.notification_empty {
+  opacity: 0.7;
+}
+
+.notification_list {
+  display: grid;
+  gap: 1rem;
+}
+
+.notification_item {
+  border: 1px solid rgba(241, 131, 3, 0.5);
+  border-radius: 0.7rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.notification_item p {
+  margin-bottom: 0.6rem;
+}
+
+.notification_item small {
+  opacity: 0.65;
+}
+
+@media only screen and (max-width: 35em) {
+  .notification {
+    width: 90%;
+  }
+}

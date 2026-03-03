@@ -20,7 +20,7 @@ const NavBar = () => {
       link: "/",
     },
     {
-      menu: "Notifications",
+      menu: "NOTIFICATIONS",
       link: "notification",
     },
     {
@@ -42,7 +42,14 @@ const NavBar = () => {
   const [open, setOpen] = useState(false);
   const [openModel, setOpenModel] = useState(false);
 
-  const {account, userName, connectWallet, createAccount, error } = useContext(ChatAppContext);
+  const {
+    account,
+    userName,
+    connectWallet,
+    createAccount,
+    error,
+    unreadNotifications,
+  } = useContext(ChatAppContext);
   return (
     <div className={Style.NavBar}>
         <div className={Style.NavBar_box}>
@@ -62,6 +69,12 @@ const NavBar = () => {
                             href={el.link}
                             >
                               {el.menu}
+                              {el.menu === "Notifications" &&
+                              unreadNotifications > 0 ? (
+                                <span className={Style.notification_badge}>
+                                  {unreadNotifications}
+                                </span>
+                              ) : null}
                             </Link>
                         </div>
                     ))}
@@ -79,6 +92,12 @@ const NavBar = () => {
                             href={el.link}
                             >
                               {el.menu}
+                              {el.menu === "Notifications" &&
+                              unreadNotifications > 0 ? (
+                                <span className={Style.notification_badge}>
+                                  {unreadNotifications}
+                                </span>
+                              ) : null}
                             </Link>
                         </div>
                     ))}
