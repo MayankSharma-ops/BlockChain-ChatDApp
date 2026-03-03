@@ -104,8 +104,8 @@ export const ChatAppProvider = ({ children }) => {
       setLoading(true);
       await getCreatedUser.wait();
       setLoading(false);
-      // window.location.reload();
-      await fetchData();
+      window.location.reload();
+      // await fetchData();
     } catch (error) {
       setError("Error While Creating Your Account Please reload your Browser");
     }

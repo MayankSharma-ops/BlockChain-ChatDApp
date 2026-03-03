@@ -20,8 +20,8 @@ const NavBar = () => {
       link: "/",
     },
     {
-      menu: "CONTACT",
-      link: "/",
+      menu: "Notifications",
+      link: "notification",
     },
     {
       menu: "SETTING",
