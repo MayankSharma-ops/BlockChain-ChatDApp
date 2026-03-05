@@ -29,6 +29,31 @@ export const ChatAppProvider = ({ children }) => {
 
   const previousPendingRef = useRef(new Set());
   const hasPendingSnapshotRef = useRef(false);
+  const hasMessageSnapshotRef = useRef(false);
+  const seenIncomingMessageKeysRef = useRef(new Set());
+
+  const pushInAppNotifications = (newNotifications) => {
+    if (!newNotifications.length) return;
+
+    setNotifications((prev) => [...newNotifications, ...prev]);
+    setUnreadNotifications((prev) => prev + newNotifications.length);
+  };
+
+  const shouldShowBrowserNotification = () => {
+    if (typeof document === "undefined") return false;
+    return document.hidden || !document.hasFocus();
+  };
+
+  const sendBrowserNotification = ({ title, message }) => {
+    if (typeof window === "undefined" || !("Notification" in window)) return;
+    if (Notification.permission !== "granted") return;
+
+    new Notification(title, {
+      body: message,
+      tag: `chat-app-${Date.now()}`,
+      renotify: false,
+    });
+  };
   const clearError = () => {
     setError("");
   };
@@ -92,6 +117,15 @@ export const ChatAppProvider = ({ children }) => {
   }, [account]);
 
   useEffect(() => {
+    if (typeof window === "undefined" || !("Notification" in window)) return;
+    if (Notification.permission !== "default") return;
+
+    Notification.requestPermission().catch((error) => {
+      console.log("Unable to request notification permission", error);
+    });
+  }, []);
+
+  useEffect(() => {
     if (!account) return;
 
     const currentPending = new Set(
@@ -129,13 +163,78 @@ export const ChatAppProvider = ({ children }) => {
       });
     });
 
-    if (newNotifications.length) {
-      setNotifications((prev) => [...newNotifications, ...prev]);
-      setUnreadNotifications((prev) => prev + newNotifications.length);
-    }
+    pushInAppNotifications(newNotifications);
 
     previousPendingRef.current = currentPending;
   }, [account, pendingSentRequests, friendLists, userLists]);
+
+  useEffect(() => {
+    if (!account || !friendLists?.length) return;
+
+    let cancelled = false;
+
+    const checkIncomingMessages = async () => {
+      try {
+        const contract = await connectingWithContract();
+        const notificationsToPush = [];
+
+        for (const friend of friendLists) {
+          const messages = await contract.readMessage(friend.pubkey);
+          if (!messages?.length) continue;
+
+          const latestMessage = messages[messages.length - 1];
+          const sender = latestMessage.sender.toLowerCase();
+          const messageKey = `${friend.pubkey.toLowerCase()}-${latestMessage.timestamp.toString()}-${sender}`;
+
+          if (!hasMessageSnapshotRef.current) {
+            seenIncomingMessageKeysRef.current.add(messageKey);
+            continue;
+          }
+
+          if (seenIncomingMessageKeysRef.current.has(messageKey)) continue;
+
+          seenIncomingMessageKeysRef.current.add(messageKey);
+
+          if (sender === account.toLowerCase()) continue;
+
+          const messageText = latestMessage.msg;
+          const friendName = friend.name || "New message";
+
+          notificationsToPush.push({
+            id: `${messageKey}-${Date.now()}`,
+            read: false,
+            createdAt: Date.now(),
+            message: `${friendName}: ${messageText}`,
+          });
+
+          if (shouldShowBrowserNotification()) {
+            sendBrowserNotification({
+              title: `New message from ${friendName}`,
+              message: messageText,
+            });
+          }
+        }
+
+        if (!cancelled) {
+          if (!hasMessageSnapshotRef.current) {
+            hasMessageSnapshotRef.current = true;
+          } else {
+            pushInAppNotifications(notificationsToPush);
+          }
+        }
+      } catch (error) {
+        console.log("Unable to check incoming messages", error);
+      }
+    };
+
+    checkIncomingMessages();
+    const interval = setInterval(checkIncomingMessages, 10000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [account, friendLists]);
 
   //READ MESSAGE
   const readMessage = async (friendAddress) => {
