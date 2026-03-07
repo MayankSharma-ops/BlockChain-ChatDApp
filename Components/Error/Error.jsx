@@ -7,17 +7,13 @@ import { ChatAppContext } from "../../Context/ChatAppContext";
 const Error = () => {
   const { error, clearError } = useContext(ChatAppContext);
 
-  if (!error) return null; // ✅ Don't show if no error
+  if (!error) return null;
 
   return (
     <div className={Style.Error}>
       <div className={Style.Error_box}>
-        
         {/* CLOSE BUTTON */}
-        <button
-          className={Style.closeBtn}
-          onClick={clearError}
-        >
+        <button className={Style.closeBtn} onClick={clearError}>
           ✕
         </button>
 

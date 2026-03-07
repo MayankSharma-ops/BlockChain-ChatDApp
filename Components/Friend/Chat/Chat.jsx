@@ -22,6 +22,7 @@ const Chat = ({
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showVideoCall, setShowVideoCall] = useState(false);
   const [chatData, setChatData] = useState({
     name: "",
     address: "",
@@ -92,6 +93,23 @@ const Chat = ({
     setMessage((prevMessage) => `${prevMessage}${emoji}`);
   };
 
+  const buildCallRoom = () => {
+    if (!account || !currentUserAddress) return "";
+
+    const participants = [account.toLowerCase(), currentUserAddress.toLowerCase()]
+      .sort()
+      .join("-")
+      .replace(/[^a-z0-9-]/g, "");
+
+    return `blockchain-chatdapp-${participants}`;
+  };
+
+  const videoCallRoom = buildCallRoom();
+  const videoCallUrl = videoCallRoom
+    ? `https://meet.jit.si/${videoCallRoom}`
+    : "";
+
+
   return (
     <div className={Style.Chat}>
       {currentUserName && currentUserAddress ? (
@@ -130,6 +148,17 @@ const Chat = ({
             })}
           </div>
         </div>
+        {currentUserName && currentUserAddress ? (
+          <div className={Style.videoCallActionRow}>
+            <button
+              type="button"
+              className={Style.videoCallButton}
+              onClick={() => setShowVideoCall(true)}
+            >
+              Start Video Call
+            </button>
+          </div>
+        ) : null}
         {currentUserName && currentUserAddress ? (
           <div className={Style.Chat_box_send}>
             <div className={Style.Chat_box_send_img}>
@@ -204,6 +233,29 @@ const Chat = ({
         ) : (
           ""
         )}
+        {showVideoCall && videoCallUrl ? (
+          <div className={Style.videoModalOverlay}>
+            <div className={Style.videoModal}>
+              <div className={Style.videoModalHeader}>
+                <h4>Video call with {currentUserName}</h4>
+                <button
+                  type="button"
+                  className={Style.closeVideoButton}
+                  onClick={() => setShowVideoCall(false)}
+                >
+                  Close
+                </button>
+              </div>
+
+              <iframe
+                src={videoCallUrl}
+                title="Video call"
+                allow="camera; microphone; fullscreen; display-capture"
+                className={Style.videoFrame}
+              />
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );

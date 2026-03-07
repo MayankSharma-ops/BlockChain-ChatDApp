@@ -57,6 +57,18 @@ export const ChatAppProvider = ({ children }) => {
   const clearError = () => {
     setError("");
   };
+  const getReadableErrorMessage = (error) => {
+    const rawMessage =
+      error?.reason || error?.shortMessage || error?.message || "";
+
+    return rawMessage.toLowerCase();
+  };
+
+  const isWalletRejectionError = (errorMessage, error) =>
+    error?.code === 4001 ||
+    errorMessage.includes("user rejected") ||
+    errorMessage.includes("user denied") ||
+    errorMessage.includes("action_rejected");
   const markNotificationsAsRead = () => {
     setNotifications((prev) =>
       prev.map((notification) => ({ ...notification, read: true })),
@@ -268,6 +280,21 @@ export const ChatAppProvider = ({ children }) => {
       window.location.reload();
       // await fetchData();
     } catch (error) {
+      setLoading(false);
+
+      const errorMessage = getReadableErrorMessage(error);
+
+      if (isWalletRejectionError(errorMessage, error)) {
+        clearError();
+        return;
+      }
+
+      if (errorMessage.includes("user already exists")) {
+        clearError();
+        await fetchData();
+        return;
+      }
+
       setError("Error While Creating Your Account Please reload your Browser");
     }
   };
@@ -286,9 +313,34 @@ export const ChatAppProvider = ({ children }) => {
       await tx.wait();
       setLoading(false);
 
+      setPendingSentRequests((prev) => {
+        const alreadyPending = prev.some(
+          (address) => address.toLowerCase() === accountAddress.toLowerCase(),
+        );
+
+        if (alreadyPending) return prev;
+
+        return [...prev, accountAddress];
+      });
+
+      clearError();
+
       await fetchData();
     } catch (error) {
       console.log(error);
+      setLoading(false);
+
+      const errorMessage =
+        error?.reason || error?.shortMessage || error?.message || "";
+
+      if (
+        errorMessage.includes("Request already pending") ||
+        errorMessage.includes("Already friends")
+      ) {
+        clearError();
+        await fetchData();
+        return;
+      }
       setError("Error While Sending Friend Request Please Try Again");
     }
   };
@@ -307,6 +359,23 @@ export const ChatAppProvider = ({ children }) => {
       await fetchData();
     } catch (error) {
       console.log(error);
+      setLoading(false);
+
+      const errorMessage = getReadableErrorMessage(error);
+
+      if (isWalletRejectionError(errorMessage, error)) {
+        clearError();
+        return;
+      }
+
+      if (
+        errorMessage.includes("no pending request") ||
+        errorMessage.includes("already friends")
+      ) {
+        clearError();
+        await fetchData();
+        return;
+      }
       setError("Error While Responding To Friend Request");
     }
   };
@@ -324,8 +393,26 @@ export const ChatAppProvider = ({ children }) => {
       // window.location.reload();
       await readMessage(Address);
       setMessageLoading(false);
+      clearError();
     } catch (error) {
       setMessageLoading(false);
+      const errorMessage = getReadableErrorMessage(error);
+
+      if (isWalletRejectionError(errorMessage, error)) {
+        clearError();
+        return;
+      }
+
+      if (errorMessage.includes("message empty")) {
+        setError("Please Provide Message");
+        return;
+      }
+
+      if (errorMessage.includes("not friends")) {
+        setError("You can send messages only to friends");
+        await fetchData();
+        return;
+      }
       setError("Error While Sending Message Please Try Again");
     }
   };

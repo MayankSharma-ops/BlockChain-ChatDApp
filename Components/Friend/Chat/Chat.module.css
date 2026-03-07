@@ -5,15 +5,15 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
-.Chat_box{
-    display: grid;
-    grid-template-columns: 1fr;
-    height: 50vh;
-    /* width: 80%; */
-    width: 100%;
-    margin: 0 auto;
-    overflow-y: auto;
-    overflow-x: hidden;
+.Chat_box {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: 50vh;
+  /* width: 80%; */
+  width: 100%;
+  margin: 0 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* .Chat_box {
@@ -26,13 +26,13 @@
 } */
 
 .Chat_box_right_p,
-.Chat_box_left_p{
-    background-color: #f182035b;
-    padding: 1rem;
-    border-top-right-radius: .5rem;
-    border-top-left-radius: .5rem;
-    border-bottom-left-radius: .5rem;
-    position: relative;
+.Chat_box_left_p {
+  background-color: #f182035b;
+  padding: 1rem;
+  border-top-right-radius: 0.5rem;
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+  position: relative;
 }
 .Chat_box_left_title {
   display: flex;
@@ -144,6 +144,71 @@
   align-items: flex-start;
 }
 
+.videoCallActionRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+}
+
+.videoCallButton {
+  background: #f18303;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 0.45rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.videoCallButton:hover {
+  opacity: 0.9;
+}
+
+.videoModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.videoModal {
+  width: min(960px, 100%);
+  background: #131313;
+  border: 1px solid rgba(241, 131, 3, 0.4);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.videoModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+.videoModalHeader h4 {
+  margin: 0;
+}
+
+.closeVideoButton {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+}
+
+.videoFrame {
+  width: 100%;
+  height: 70vh;
+  border: none;
+}
+
 @media (max-width: 600px) {
   .Chat {
     /* padding: 0.5rem;
@@ -190,6 +255,10 @@
 
   .emojiPicker {
     grid-template-columns: repeat(4, 1fr);
+  }
+
+  .videoFrame {
+    height: 60vh;
   }
 }
 .Chat_user_info_box {
