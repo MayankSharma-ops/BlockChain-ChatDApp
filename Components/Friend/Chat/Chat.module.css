@@ -15,6 +15,47 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
+.chatActionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.clearChatButton,
+.deleteSelectedButton {
+  border: 1px solid rgba(241, 131, 3, 0.75);
+  background: transparent;
+  color: #f18303;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.deleteSelectedButton {
+  border-color: rgba(255, 91, 91, 0.9);
+  color: #ff7f7f;
+}
+
+.deleteSelectedButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.messageRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.messageCheckbox {
+  accent-color: #f18303;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
 
 /* .Chat_box {
   display: flex;

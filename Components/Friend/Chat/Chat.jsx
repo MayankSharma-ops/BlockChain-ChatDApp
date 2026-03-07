@@ -23,6 +23,9 @@ const Chat = ({
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showVideoCall, setShowVideoCall] = useState(false);
+  const [isClearChatMode, setIsClearChatMode] = useState(false);
+  const [selectedMessages, setSelectedMessages] = useState([]);
+  const [hiddenMessages, setHiddenMessages] = useState(new Set());
   const [chatData, setChatData] = useState({
     name: "",
     address: "",
@@ -93,6 +96,44 @@ const Chat = ({
     setMessage((prevMessage) => `${prevMessage}${emoji}`);
   };
 
+const buildMessageKey = (el, index) =>
+    `${el.sender.toLowerCase()}-${el.timestamp?.toString?.() || ""}-${index}`;
+
+  const handleToggleClearMode = () => {
+    setIsClearChatMode((prevState) => !prevState);
+    setSelectedMessages([]);
+  };
+
+  const handleSelectMessage = (messageKey) => {
+    setSelectedMessages((prevSelected) => {
+      if (prevSelected.includes(messageKey)) {
+        return prevSelected.filter((key) => key !== messageKey);
+      }
+
+      return [...prevSelected, messageKey];
+    });
+  };
+
+  const handleDeleteSelectedMessages = () => {
+    if (!selectedMessages.length) return;
+
+    setHiddenMessages((prevHidden) => {
+      const updatedHidden = new Set(prevHidden);
+      selectedMessages.forEach((key) => updatedHidden.add(key));
+      return updatedHidden;
+    });
+
+    setSelectedMessages([]);
+    setIsClearChatMode(false);
+  };
+
+  const visibleMessages = friendMsg
+    .map((el, index) => ({ el, originalIndex: index }))
+    .filter(({ el, originalIndex }) =>
+      !hiddenMessages.has(buildMessageKey(el, originalIndex)),
+    );
+
+
   const buildCallRoom = () => {
     if (!account || !currentUserAddress) return "";
 
@@ -109,6 +150,49 @@ const Chat = ({
     ? `https://meet.jit.si/${videoCallRoom}`
     : "";
 
+    const clearChatStorageKey =
+    account && currentUserAddress
+      ? `hidden-chat-messages-${account.toLowerCase()}-${currentUserAddress.toLowerCase()}`
+      : "";
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!clearChatStorageKey) {
+      setHiddenMessages(new Set());
+      setSelectedMessages([]);
+      setIsClearChatMode(false);
+      return;
+    }
+    const savedHiddenMessages = window.localStorage.getItem(clearChatStorageKey);
+
+    if (!savedHiddenMessages) {
+      setHiddenMessages(new Set());
+      setSelectedMessages([]);
+      setIsClearChatMode(false);
+      return;
+    }
+
+    try {
+      const parsedMessages = JSON.parse(savedHiddenMessages);
+      setHiddenMessages(new Set(parsedMessages));
+    } catch (error) {
+      console.log("Unable to parse saved clear chat data", error);
+      setHiddenMessages(new Set());
+    }
+
+    setSelectedMessages([]);
+    setIsClearChatMode(false);
+  }, [clearChatStorageKey]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !clearChatStorageKey) return;
+
+    window.localStorage.setItem(
+      clearChatStorageKey,
+      JSON.stringify(Array.from(hiddenMessages)),
+    );
+  }, [clearChatStorageKey, hiddenMessages]);
+
 
   return (
     <div className={Style.Chat}>
@@ -124,20 +208,53 @@ const Chat = ({
         ""
       )}
       <div className={Style.Chat_box_box}>
+        <div className={Style.chatActionHeader}>
+          <button
+            type="button"
+            className={Style.clearChatButton}
+            onClick={handleToggleClearMode}
+          >
+            {isClearChatMode ? "Cancel" : "Clear Chat"}
+          </button>
+
+          {isClearChatMode ? (
+            <button
+              type="button"
+              className={Style.deleteSelectedButton}
+              onClick={handleDeleteSelectedMessages}
+              disabled={!selectedMessages.length}
+            >
+              Delete
+            </button>
+          ) : null}
+        </div>
         <div className={Style.Chat_box}>
           <div className={Style.Chat_box_left}>
-            {friendMsg.map((el, i) => {
+            {visibleMessages.map(({ el, originalIndex }) => {
               const isMe = el.sender.toLowerCase() === account.toLowerCase();
+              const messageKey = buildMessageKey(el, originalIndex);
+              const isSelected = selectedMessages.includes(messageKey);
 
               return (
                 <div
-                  key={i}
+                  key={messageKey}
                   className={isMe ? Style.myWrapper : Style.friendWrapper}
                 >
-                  {/* Message Bubble */}
-                  <p className={isMe ? Style.myMessage : Style.friendMessage}>
-                    {el.msg}
-                  </p>
+                  <div className={Style.messageRow}>
+                    {isClearChatMode ? (
+                      <input
+                        type="checkbox"
+                        className={Style.messageCheckbox}
+                        checked={isSelected}
+                        onChange={() => handleSelectMessage(messageKey)}
+                      />
+                    ) : null}
+
+                    {/* Message Bubble */}
+                    <p className={isMe ? Style.myMessage : Style.friendMessage}>
+                      {el.msg}
+                    </p>
+                  </div>
 
                   {/* Time bubble */}
                   <small className={isMe ? Style.myTime : Style.friendTime}>
